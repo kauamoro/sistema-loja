@@ -1,0 +1,84 @@
+// Definição da fonte de dados (conexão com o banco de dados)
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Definição do gerador do Prisma Client
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo de Cliente
+model Cliente {
+  id        Int         @id @default(autoincrement()) // ID único para cada cliente
+  nome      String
+  telefone  String      // Número de telefone do cliente
+  tipo      TipoCliente // Tipo do cliente (fiel ou aleatório)
+  pedidos   Pedido[]    // Relacionamento de 1 para N com Pedidos
+}
+
+enum TipoCliente {
+  fiel
+  aleatorio
+}
+
+// Modelo de Pedido atualizado
+model Pedido {
+  id             Int             @id @default(autoincrement()) // ID único para cada pedido
+  clienteId      Int?            // Relacionamento com Cliente (opcional para clientes aleatórios)
+  cliente        Cliente?        @relation(fields: [clienteId], references: [id]) // Cliente associado ao pedido
+  valorTotal     Float           // Valor total do pedido
+  metodoPagamento MetodoPagamento
+  parcelas       Parcela[]       // Relacionamento de 1 para N com Parcelas
+  pedidoProdutos PedidoProduto[] // Relacionamento N para N com Produto (via PedidoProduto)
+  createdAt      DateTime        @default(now()) // Data de criação do pedido
+  updatedAt      DateTime        @updatedAt // Data de atualização do pedido
+}
+
+// Enum de Métodos de Pagamento
+enum MetodoPagamento {
+  dinheiro
+  pix
+  cartao_credito
+  cartao_debito
+  a_prazo
+}
+
+// Modelo de Parcelas (para controle de pagamentos a prazo)
+model Parcela {
+  id        Int       @id @default(autoincrement()) // ID único para cada parcela
+  pedidoId  Int       // Relacionamento com Pedido
+  pedido    Pedido    @relation(fields: [pedidoId], references: [id]) // Pedido associado à parcela
+  valor     Float     // Valor da parcela
+  vencimento DateTime // Data de vencimento da parcela
+  status    StatusParcela
+  updatedAt DateTime  @updatedAt // Data de atualização da parcela
+}
+
+enum StatusParcela {
+  pendente
+  paga
+}
+
+// Modelo de Produto
+model Produto {
+  id          Int      @id @default(autoincrement()) // ID único para cada produto
+  nome        String   // Nome do produto
+  descricao   String?  // Descrição do produto (opcional)
+  preco       Float    // Preço do produto
+  estoque     Int      // Quantidade disponível no estoque
+  pedidos     PedidoProduto[] // Relacionamento N para N com pedidos
+}
+
+// Tabela de relacionamento entre Pedido e Produto
+model PedidoProduto {
+  id        Int      @id @default(autoincrement()) // ID único para cada relacionamento
+  pedidoId  Int      // Relacionamento com o pedido
+  produtoId Int      // Relacionamento com o produto
+  quantidade Int     // Quantidade de um produto em um pedido
+  precoUnitario Float // Preço unitário do produto no momento da compra
+
+  pedido    Pedido   @relation(fields: [pedidoId], references: [id])
+  produto   Produto  @relation(fields: [produtoId], references: [id])
+}
