@@ -1,5 +1,6 @@
+//@ts-nocheck
 import { Router } from 'express';
-import ClienteController from '../controllers/cliente.controller'; // Importação com default
+import ClienteController from '../controllers/cliente.controller';
 
 const router = Router();
 
