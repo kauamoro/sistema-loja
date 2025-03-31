@@ -69,6 +69,7 @@ model Produto {
   preco       Float    // Preço do produto
   estoque     Int      // Quantidade disponível no estoque
   pedidos     PedidoProduto[] // Relacionamento N para N com pedidos
+  updatedAt DateTime @updatedAt // Data de atualização do produto
 }
 
 // Tabela de relacionamento entre Pedido e Produto
