@@ -36,6 +36,9 @@ export class ClienteService {
 
     static async updateCliente(id: number, data: { nome?: string; telefone?: string; tipo?: string }) {
         try {
+            const clienteExiste = await prisma.cliente.findUnique({ where: { id } });
+            if (!clienteExiste) throw new Error('Cliente não encontrado.');
+
             return await prisma.cliente.update({
                 where: { id },
                 data: {
@@ -51,6 +54,9 @@ export class ClienteService {
 
     static async deleteCliente(id: number) {
         try {
+            const clienteExiste = await prisma.cliente.findUnique({ where: { id } });
+            if (!clienteExiste) throw new Error('Cliente não encontrado.');
+
             return await prisma.cliente.delete({ where: { id } });
         } catch (error) {
             throw new Error('Erro ao excluir cliente');
