@@ -2,6 +2,7 @@ import express from 'express';
 import { router as clienteRouter } from './routes/cliente.routes';
 import { router as produtoRouter } from './routes/produto.routes';
 import { router as pedidoRouter } from './routes/pedido.routes';
+import { router as parcelaRouter } from './routes/parcela.routes';
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 app.use('/clientes', clienteRouter);
 app.use('/produtos', produtoRouter);
 app.use('/pedidos', pedidoRouter);
+app.use('/parcelas', parcelaRouter);
 
 // Definir a porta
 const PORT = process.env.PORT || 3000;
